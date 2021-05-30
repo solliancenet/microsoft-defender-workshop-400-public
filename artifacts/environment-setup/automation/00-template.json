@@ -116,22 +116,22 @@
         "imagePublisher": "MicrosoftWindowsServer",
         "imageOffer": "WindowsServer",
         "imageSKU": "2016-Datacenter",
-        "adAvailabilitySetName": "adAvailabiltySet",
-        "publicIPAddressName": "ad-lb-pip",
+        "adAvailabilitySetName": "[concat(variables('resourceName'),'-adset')]",
+        "publicIPAddressName": "[concat(variables('resourceName'),'-ap-pip')]",
         "adLBFE": "LBFE",
         "adLBBE": "LBBE",
         "adPDCRDPNAT": "adPDCRDP",
         "adBDCRDPNAT": "adBDCRDP",
-        "virtualNetworkName": "[concat(variables('resourceName'),'-ad']",
-        "virtualNetworkAddressRange": "10.0.0.0/16",
+        "virtualNetworkName": "[concat(variables('resourceName'),'-ad')]",
+        "virtualNetworkAddressRange": "10.1.0.0/16",
         "adSubnetName": "adSubnet",
-        "adSubnet": "10.0.0.0/24",
+        "adSubnet": "10.1.0.0/24",
         "adPDCNicName": "[concat(variables('resourceName'),'-pdc-nic']",
-        "adPDCNicIPAddress": "10.0.0.4",
+        "adPDCNicIPAddress": "10.1.0.4",
         "adBDCNicName": "[concat(variables('resourceName'),'-bdc-nic']",
-        "adBDCNicIPAddress": "10.0.0.5",
+        "adBDCNicIPAddress": "10.1.0.5",
         "adSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('adSubnetName'))]",
-        "adLBName": "adLoadBalancer",
+        "adLBName": "[concat(variables('resourceName'),'-adlb')]",
         "adlbFEConfigID": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', variables('adLBName'), variables('adLBFE'))]",
         "adPDCRDPNATRuleID": "[resourceId('Microsoft.Network/loadBalancers/inboundNatRules', variables('adLBName'), variables('adPDCRDPNAT'))]",
         "adBDCRDPNATRuleID": "[resourceId('Microsoft.Network/loadBalancers/inboundNatRules', variables('adLBName'), variables('adBDCRDPNAT'))]",
@@ -425,14 +425,14 @@
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
-                        "10.5.0.0/16"
+                        "10.2.0.0/16"
                     ]
                 },
                 "subnets": [
                   {
                       "name": "default",
                       "properties": {
-                          "addressPrefix": "10.5.0.0/24",
+                          "addressPrefix": "10.2.0.0/24",
                           "delegations": [],
                           "privateEndpointNetworkPolicies": "Enabled",
                           "privateLinkServiceNetworkPolicies": "Enabled"
