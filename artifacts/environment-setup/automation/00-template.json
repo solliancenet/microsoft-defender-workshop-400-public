@@ -123,7 +123,7 @@
         "adPDCRDPNAT": "adPDCRDP",
         "adBDCRDPNAT": "adBDCRDP",
         "virtualNetworkName": "[concat(variables('resourceName'),'-ad')]",
-        "virtualNetworkAddressRange": "10.1.0.0/16",
+        "virtualNetworkAddressRange": "10.2.0.0/16",
         "adSubnetName": "adSubnet",
         "adSubnet": "10.2.0.0/24",
         "adPDCNicName": "[concat(variables('resourceName'),'-pdc-nic')]",
@@ -350,9 +350,9 @@
               },
               "subnets": [
                 {
-                  "name": "[variables('subnetName')]",
+                  "name": "[variables('adSubnetName')]",
                   "properties": {
-                    "addressPrefix": "[variables('subnetRange')]"
+                    "addressPrefix": "[variables('adSubnet')]"
                   }
                 }
               ]
