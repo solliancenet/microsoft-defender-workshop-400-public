@@ -70,7 +70,7 @@
             "metadata": {
                 "description": "The DNS prefix for the public IP address used by the Load Balancer"
             },
-            "defaultValue" : "[parameters('uniqueSuffix')]"
+            "defaultValue" : "[concat('lab', parameters('uniqueSuffix'))]"
         },
         "domainName": {
             "type": "string",

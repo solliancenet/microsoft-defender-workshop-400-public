@@ -54,7 +54,7 @@ function CreateTestScript($azureUsername, $azurePassword, $azureTenantID, $azure
   $WebClient = New-Object System.Net.WebClient;
   $WebClient.DownloadFile("https://raw.githubusercontent.com/$repoUrl/main/artifacts/environment-setup\spektra\post-install-script01.ps1","C:\LabFiles\post-install-script01.ps1")
   
-  remove-item "RunInstall.ps1";
+  remove-item "RunInstall.ps1" -ea silentlycontinue;
   
   #create the test script
   add-content "RunInstall.ps1" "cd c:\labfiles";
@@ -102,7 +102,8 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
 
 cd "c:\labfiles";
 
-$repoUrl = "/solliancenet/microsoft-defender-workshop-400-public";
+$branch = "main";
+$repoUrl = "solliancenet/microsoft-defender-workshop-400-public";
 
 CreateCredFile $azureUsername $azurePassword $azureTenantID $azureSubscriptionID $deploymentId $odlId
 
@@ -123,6 +124,8 @@ Connect-AzAccount -Credential $cred | Out-Null
 #download the git repo...
 Write-Host "Download Git repo." -ForegroundColor Green -Verbose
 
+remove-item "microsoft-defender-workshop-400" -force -recurse -ea silentlycontinue;
+
 git clone "https://github.com/$repoUrl" "microsoft-defender-workshop-400"
 
 # Template deployment
@@ -137,12 +140,12 @@ $content = $content.Replace("GET-AZUSER-PASSWORD",$azurepassword);
 $content = $content | ForEach-Object {$_ -Replace "GET-AZUSER-UPN", "$AzureUsername"};
 $content = $content | ForEach-Object {$_ -Replace "GET-ODL-ID", "$deploymentId"};
 $content = $content | ForEach-Object {$_ -Replace "GET-DEPLOYMENT-ID", "$deploymentId"};
-$content = $content | ForEach-Object {$_ -Replace "GET-REGION", "$($rg.location)"};
-$content = $content | ForEach-Object {$_ -Replace "ARTIFACTS-LOCATION", $repoUrl};
+$content = $content | ForEach-Object {$_ -Replace "GET-REGION", "westus2"};
+$content = $content | ForEach-Object {$_ -Replace "ARTIFACTS-LOCATION", "https://raw.githubusercontent.com/$repoUrl/$branch/artifacts/environment-setup/automation/"};
 $content | Set-Content -Path "$($parametersFile).json";
 
 New-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName `
-  -TemplateUri "https://raw.githubusercontent.com/$repoUrl/main/artifacts/environment-setup/automation/00-core.json" `
+  -TemplateUri "https://raw.githubusercontent.com/$repoUrl/$branch/artifacts/environment-setup/automation/00-template.json" `
   -TemplateParameterFile "$($parametersFile).json"
  
 cd './microsoft-defender-workshop-400/artifacts/environment-setup/automation'
