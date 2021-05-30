@@ -1045,7 +1045,7 @@
             "name": "[variables('publicIPAddressName')]",
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2020-03-01",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
@@ -1056,7 +1056,7 @@
         {
             "apiVersion": "2019-12-01",
             "type": "Microsoft.Compute/availabilitySets",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "name": "[variables('adAvailabilitySetName')]",
             "properties": {
                 "PlatformUpdateDomainCount": 20,
@@ -1078,7 +1078,7 @@
                 },
                 "parameters": {
                     "location": {
-                        "value": "[parameters('location')]"
+                        "value": "[variables('location')]"
                     },
                     "virtualNetworkName": {
                         "value": "[variables('virtualNetworkName')]"
@@ -1099,7 +1099,7 @@
             "name": "[variables('adLBName')]",
             "type": "Microsoft.Network/loadBalancers",
             "apiVersion": "2020-03-01",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
             ],
@@ -1151,7 +1151,7 @@
             "name": "[variables('adPDCNicName')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2020-03-01",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', 'VNet')]",
                 "[resourceId('Microsoft.Network/loadbalancers', variables('adLBName'))]"
@@ -1185,7 +1185,7 @@
             "name": "[variables('adBDCNicName')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2020-03-01",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments', 'VNet')]",
                 "[resourceId('Microsoft.Network/loadBalancers', variables('adLBName'))]"
@@ -1219,7 +1219,7 @@
             "name": "[variables('adPDCVMName')]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/networkInterfaces', variables('adPDCNicName'))]",
                 "[resourceId('Microsoft.Compute/availabilitySets', variables('adAvailabilitySetName'))]",
@@ -1278,7 +1278,7 @@
                     "name": "CreateADForest",
                     "type": "extensions",
                     "apiVersion": "2019-12-01",
-                    "location": "[parameters('location')]",
+                    "location": "[variables('location')]",
                     "dependsOn": [
                         "[resourceId('Microsoft.Compute/virtualMachines', variables('adPDCVMName'))]"
                     ],
@@ -1322,7 +1322,7 @@
                 },
                 "parameters": {
                     "location": {
-                        "value": "[parameters('location')]"
+                        "value": "[variables('location')]"
                     },
                     "virtualNetworkName": {
                         "value": "[variables('virtualNetworkName')]"
@@ -1360,7 +1360,7 @@
                 },
                 "parameters": {
                     "location": {
-                        "value": "[parameters('location')]"
+                        "value": "[variables('location')]"
                     },
                     "nicName": {
                         "value": "[variables('adBDCNicName')]"
@@ -1401,7 +1401,7 @@
             "name": "[variables('adBDCVMName')]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/networkInterfaces', variables('adBDCNicName'))]",
                 "[resourceId('Microsoft.Compute/availabilitySets', variables('adAvailabilitySetName'))]",
@@ -1460,7 +1460,7 @@
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(variables('adBDCVMName'),'/PrepareBDC')]",
             "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines', variables('adBDCVMName'))]"
             ],
@@ -1497,7 +1497,7 @@
                         "value": "[variables('adBDCVMName')]"
                     },
                     "location": {
-                        "value": "[parameters('location')]"
+                        "value": "[variables('location')]"
                     },
                     "adminUsername": {
                         "value": "[parameters('adminUsername')]"
@@ -1532,7 +1532,7 @@
                 },
                 "parameters": {
                     "location": {
-                        "value": "[parameters('location')]"
+                        "value": "[variables('location')]"
                     },
                     "virtualNetworkName": {
                         "value": "[variables('virtualNetworkName')]"
