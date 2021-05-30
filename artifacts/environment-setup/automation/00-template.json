@@ -111,8 +111,8 @@
       },
       "vmName": "[concat('labvm-',parameters('uniqueSuffix'))]",
       "storageAccountType": "Premium_LRS",
-        "adPDCVMName": "adPDC",
-        "adBDCVMName": "adBDC",
+        "adPDCVMName": "[concat(variables('resourceName'),'-adPDC')]",
+        "adBDCVMName": "[concat(variables('resourceName'),'-adBDC')]",
         "imagePublisher": "MicrosoftWindowsServer",
         "imageOffer": "WindowsServer",
         "imageSKU": "2016-Datacenter",
@@ -122,13 +122,13 @@
         "adLBBE": "LBBE",
         "adPDCRDPNAT": "adPDCRDP",
         "adBDCRDPNAT": "adBDCRDP",
-        "virtualNetworkName": "adVNET",
+        "virtualNetworkName": "[concat(variables('resourceName'),'-ad']",
         "virtualNetworkAddressRange": "10.0.0.0/16",
         "adSubnetName": "adSubnet",
         "adSubnet": "10.0.0.0/24",
-        "adPDCNicName": "adPDCNic",
+        "adPDCNicName": "[concat(variables('resourceName'),'-pdc-nic']",
         "adPDCNicIPAddress": "10.0.0.4",
-        "adBDCNicName": "adBDCNic",
+        "adBDCNicName": "[concat(variables('resourceName'),'-bdc-nic']",
         "adBDCNicIPAddress": "10.0.0.5",
         "adSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('adSubnetName'))]",
         "adLBName": "adLoadBalancer",
@@ -373,7 +373,49 @@
                 "virtualNetworkPeerings": [],
                 "enableDdosProtection": false,
                 "enableVmProtection": false
-            }
+            },
+            "resources": [
+                {
+                    "apiVersion": "2020-05-01",
+                    "type": "virtualNetworkPeerings",
+                    "name": "hub-to-ad",
+                    "location": "[variables('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/virtualNetworks/', concat(variables('resourceName'),'-ad'))]",
+                        "[resourceId('Microsoft.Network/virtualNetworks/', concat(variables('resourceName'),'-hub'))]"
+                    ],
+                    "comments": "hub to ad",
+                    "properties": {
+                        "allowVirtualNetworkAccess": true,
+                        "allowForwardedTraffic": false,
+                        "allowGatewayTransit": false,
+                        "useRemoteGateways": false,
+                        "remoteVirtualNetwork": {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('resourceName'),'-ad'))]"
+                        }
+                    }
+                },
+                {
+                    "apiVersion": "2020-05-01",
+                    "type": "virtualNetworkPeerings",
+                    "name": "hub-to-web",
+                    "location": "[variables('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/virtualNetworks/', concat(variables('resourceName'),'-web'))]",
+                        "[resourceId('Microsoft.Network/virtualNetworks/', concat(variables('resourceName'),'-hub'))]"
+                    ],
+                    "comments": "hub to web",
+                    "properties": {
+                        "allowVirtualNetworkAccess": true,
+                        "allowForwardedTraffic": false,
+                        "allowGatewayTransit": false,
+                        "useRemoteGateways": false,
+                        "remoteVirtualNetwork": {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('resourceName'),'-web'))]"
+                        }
+                    }
+                }
+            ]
         },
         {
             "type": "Microsoft.Network/virtualNetworks",

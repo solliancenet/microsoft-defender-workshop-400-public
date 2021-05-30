@@ -94,6 +94,8 @@ EnableIEFileDownload
         
 #InstallAzureCli
 
+InstallChrome
+
 Uninstall-AzureRm -ea SilentlyContinue
 
 CreateLabFilesDirectory
