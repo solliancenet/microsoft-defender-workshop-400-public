@@ -52,10 +52,16 @@ function CreateTestScript($azureUsername, $azurePassword, $azureTenantID, $azure
 
   #copy the script to lab files
   $WebClient = New-Object System.Net.WebClient;
-  $WebClient.DownloadFile("$repoUrl\environment-setup\spektra\post-install-script01.ps1","C:\LabFiles\post-install-script01.ps1")
-
-  #create the test script
+  $WebClient.DownloadFile("https://raw.githubusercontent.com/$repoUrl/main/artifacts/environment-setup\spektra\post-install-script01.ps1","C:\LabFiles\post-install-script01.ps1")
   
+  remove-item "RunInstall.ps1";
+  
+  #create the test script
+  add-content "RunInstall.ps1" "cd c:\labfiles";
+  
+  $line = "powershell.exe -ExecutionPolicy Unrestricted -File post-install-script01.ps1 -azureUsername $azureUsername -azurePassword $azurePassword -azureTenantID $azureTenantID -azureSubscriptionID $azureSubscriptionID -odlId $deploymentId -deploymentId $deploymentId";
+  
+  add-content "RunInstall.ps1" $line;
 }
 
 Start-Transcript -Path C:\WindowsAzure\Logs\CloudLabsCustomScriptExtension.txt -Append
@@ -78,15 +84,15 @@ DisableInternetExplorerESC
 
 EnableIEFileDownload
 
-InstallChocolaty
+#InstallChocolaty
 
-InstallNotepadPP
+#InstallNotepadPP
 
-InstallAzPowerShellModule
+#InstallAzPowerShellModule
 
-InstallGit
+#InstallGit
         
-InstallAzureCli
+#InstallAzureCli
 
 Uninstall-AzureRm -ea SilentlyContinue
 
@@ -101,8 +107,6 @@ $repoUrl = "/solliancenet/microsoft-defender-workshop-400-public";
 CreateCredFile $azureUsername $azurePassword $azureTenantID $azureSubscriptionID $deploymentId $odlId
 
 CreateTestScript $azureUsername $azurePassword $azureTenantID $azureSubscriptionID $deploymentId $odlId
-
-#CreateTestScript $azureUsername $azurePassword $azureTenantID $azureSubscriptionID $deploymentId $odlId
 
 . C:\LabFiles\AzureCreds.ps1
 
@@ -126,7 +130,7 @@ $rg = Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*-securit
 $resourceGroupName = $rg.ResourceGroupName
 $deploymentId =  (Get-AzResourceGroup -Name $resourceGroupName).Tags["DeploymentId"]
 
-$parametersFile = "c:\labfiles\microsoft-defender-workshop-400\artifacts\environment-setup\automation\spektra\deploy.parameters.post.json"
+$parametersFile = "c:\labfiles\microsoft-defender-workshop-400\artifacts\environment-setup\spektra\deploy.parameters.post.json"
 $content = Get-Content -Path $parametersFile -raw;
 
 $content = $content.Replace("GET-AZUSER-PASSWORD",$azurepassword);

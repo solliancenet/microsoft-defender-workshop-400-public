@@ -85,6 +85,14 @@
             "metadata": {
                 "description": "The github location"
             }
+          },
+          "_artifactsLocationSasToken" : 
+          {
+            "type": "string",
+            "metadata": {
+                "description": "SAS key if needed"
+            },
+            "defaultValue" : ""
           }
     },
     "variables": {
