@@ -28,6 +28,9 @@
     },
     "_artifactsLocation" : {
       "value": "ARTIFACTS-LOCATION"
+    },
+    "_artifactsLocationSasToken" : {
+      "value": ""
     }
   }
 }
