@@ -106,7 +106,8 @@
           "eastus" : { "region": "East US 2"},
           "southcentralus" : { "region": "South Central US"},
           "westcentralus" : { "region": "West Cental US"},
-          "westus2" : { "region": "West US 2"}
+          "westus2" : { "region": "West US 2"},
+          "westus" : { "region": "West US"}
       },
       "vmName": "[concat('labvm-',parameters('uniqueSuffix'))]",
       "storageAccountType": "Premium_LRS",
