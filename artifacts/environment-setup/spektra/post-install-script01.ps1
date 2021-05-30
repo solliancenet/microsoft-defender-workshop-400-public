@@ -171,7 +171,7 @@ Write-Host "Download Git repo." -ForegroundColor Green -Verbose
 git clone https://github.com/solliancenet/microsoft-defender-workshop-400.git
 
 # Template deployment
-$rg = Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*-wssecurity" };
+$rg = Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*-security" };
 $resourceGroupName = $rg.ResourceGroupName
 $deploymentId =  (Get-AzResourceGroup -Name $resourceGroupName).Tags["DeploymentId"]
 
