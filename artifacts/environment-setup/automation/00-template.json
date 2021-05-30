@@ -125,11 +125,11 @@
         "virtualNetworkName": "[concat(variables('resourceName'),'-ad')]",
         "virtualNetworkAddressRange": "10.1.0.0/16",
         "adSubnetName": "adSubnet",
-        "adSubnet": "10.1.0.0/24",
+        "adSubnet": "10.2.0.0/24",
         "adPDCNicName": "[concat(variables('resourceName'),'-pdc-nic')]",
-        "adPDCNicIPAddress": "10.1.0.4",
+        "adPDCNicIPAddress": "10.2.0.4",
         "adBDCNicName": "[concat(variables('resourceName'),'-bdc-nic')]",
-        "adBDCNicIPAddress": "10.1.0.5",
+        "adBDCNicIPAddress": "10.2.0.5",
         "adSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('adSubnetName'))]",
         "adLBName": "[concat(variables('resourceName'),'-adlb')]",
         "adlbFEConfigID": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', variables('adLBName'), variables('adLBFE'))]",
@@ -137,7 +137,6 @@
         "adBDCRDPNATRuleID": "[resourceId('Microsoft.Network/loadBalancers/inboundNatRules', variables('adLBName'), variables('adBDCRDPNAT'))]",
         "adBEAddressPoolID": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('adLBName'), variables('adLBBE'))]",
         "adDataDiskSize": 1000,
-        "vnetTemplateUri": "[uri(parameters('_artifactsLocation'), concat('nestedtemplates/vnet.json', parameters('_artifactsLocationSasToken')))]",
         "nicTemplateUri": "[uri(parameters('_artifactsLocation'), concat('nestedtemplates/nic.json', parameters('_artifactsLocationSasToken')))]",
         "vnetwithDNSTemplateUri": "[uri(parameters('_artifactsLocation'), concat('nestedtemplates/vnet-with-dns-server.json', parameters('_artifactsLocationSasToken')))]",
         "configureADBDCTemplateUri": "[uri(parameters('_artifactsLocation'), concat('nestedtemplates/configureADBDC.json', parameters('_artifactsLocationSasToken')))]",
@@ -339,6 +338,27 @@
             }
         },
         {
+            "name": "[concat(variables('resourceName'),'-ad')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "location": "[variables('location')]",
+            "apiVersion": "2020-03-01",
+            "properties": {
+              "addressSpace": {
+                "addressPrefixes": [
+                  "[variables('virtualNetworkAddressRange')]"
+                ]
+              },
+              "subnets": [
+                {
+                  "name": "[variables('subnetName')]",
+                  "properties": {
+                    "addressPrefix": "[variables('subnetRange')]"
+                  }
+                }
+              ]
+            }
+          },
+        {
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2020-05-01",
             "name": "[concat(variables('resourceName'),'-hub')]",
@@ -425,14 +445,14 @@
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
-                        "10.2.0.0/16"
+                        "10.3.0.0/16"
                     ]
                 },
                 "subnets": [
                   {
                       "name": "default",
                       "properties": {
-                          "addressPrefix": "10.2.0.0/24",
+                          "addressPrefix": "10.3.0.0/24",
                           "delegations": [],
                           "privateEndpointNetworkPolicies": "Enabled",
                           "privateLinkServiceNetworkPolicies": "Enabled"
@@ -1106,35 +1126,6 @@
             },
             "sku": {
                 "name": "Aligned"
-            }
-        },
-        {
-            "name": "VNet",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-09-01",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('vnetTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "location": {
-                        "value": "[variables('location')]"
-                    },
-                    "virtualNetworkName": {
-                        "value": "[variables('virtualNetworkName')]"
-                    },
-                    "virtualNetworkAddressRange": {
-                        "value": "[variables('virtualNetworkAddressRange')]"
-                    },
-                    "subnetName": {
-                        "value": "[variables('adSubnetName')]"
-                    },
-                    "subnetRange": {
-                        "value": "[variables('adSubnet')]"
-                    }
-                }
             }
         },
         {
