@@ -24,8 +24,8 @@ Param (
 function CreateCredFile($azureUsername, $azurePassword, $azureTenantID, $azureSubscriptionID, $deploymentId)
 {
   $WebClient = New-Object System.Net.WebClient
-  $WebClient.DownloadFile("https://raw.githubusercontent.com/solliancenet/azure-synapse-analytics-workshop-400/master/artifacts/environment-setup/spektra/AzureCreds.txt","C:\LabFiles\AzureCreds.txt")
-  $WebClient.DownloadFile("https://raw.githubusercontent.com/solliancenet/azure-synapse-analytics-workshop-400/master/artifacts/environment-setup/spektra/AzureCreds.ps1","C:\LabFiles\AzureCreds.ps1")
+  $WebClient.DownloadFile("https://raw.githubusercontent.com/$repoUrl/main/artifacts/environment-setup/spektra/AzureCreds.txt","C:\LabFiles\AzureCreds.txt")
+  $WebClient.DownloadFile("https://raw.githubusercontent.com/$repoUrl/main/artifacts/environment-setup/spektra/AzureCreds.ps1","C:\LabFiles\AzureCreds.ps1")
 
   (Get-Content -Path "C:\LabFiles\AzureCreds.txt") | ForEach-Object {$_ -Replace "ClientIdValue", ""} | Set-Content -Path "C:\LabFiles\AzureCreds.ps1"
   (Get-Content -Path "C:\LabFiles\AzureCreds.txt") | ForEach-Object {$_ -Replace "AzureUserNameValue", "$azureUsername"} | Set-Content -Path "C:\LabFiles\AzureCreds.txt"
@@ -46,14 +46,22 @@ function CreateCredFile($azureUsername, $azurePassword, $azureTenantID, $azureSu
   Copy-Item "C:\LabFiles\AzureCreds.txt" -Destination "C:\Users\Public\Desktop"
 }
 
+function CreateTestScript($azureUsername, $azurePassword, $azureTenantID, $azureSubscriptionID, $deploymentId)
+{
+  cd c:\labfiles;
+
+  #copy the script to lab files
+  $WebClient = New-Object System.Net.WebClient;
+  $WebClient.DownloadFile("$repoUrl\environment-setup\spektra\post-install-script01.ps1","C:\LabFiles\post-install-script01.ps1")
+
+  #create the test script
+  
+}
+
 Start-Transcript -Path C:\WindowsAzure\Logs\CloudLabsCustomScriptExtension.txt -Append
 
 [Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls
 [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls" 
-
-DisableInternetExplorerESC
-
-EnableIEFileDownload
 
 #download the solliance pacakage
 $WebClient = New-Object System.Net.WebClient;
@@ -66,12 +74,15 @@ $WebClient.DownloadFile("https://raw.githubusercontent.com/solliancenet/common-w
 
 Set-Executionpolicy unrestricted -force
 
+DisableInternetExplorerESC
+
+EnableIEFileDownload
+
 InstallChocolaty
 
 InstallNotepadPP
 
 InstallAzPowerShellModule
-#InstallAzPowerShellModuleMSI
 
 InstallGit
         
@@ -85,7 +96,13 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
 
 cd "c:\labfiles";
 
+$repoUrl = "/solliancenet/microsoft-defender-workshop-400-public";
+
 CreateCredFile $azureUsername $azurePassword $azureTenantID $azureSubscriptionID $deploymentId $odlId
+
+CreateTestScript $azureUsername $azurePassword $azureTenantID $azureSubscriptionID $deploymentId $odlId
+
+#CreateTestScript $azureUsername $azurePassword $azureTenantID $azureSubscriptionID $deploymentId $odlId
 
 . C:\LabFiles\AzureCreds.ps1
 
@@ -102,7 +119,7 @@ Connect-AzAccount -Credential $cred | Out-Null
 #download the git repo...
 Write-Host "Download Git repo." -ForegroundColor Green -Verbose
 
-git clone https://github.com/solliancenet/microsoft-defender-workshop-400.git
+git clone "https://github.com/$repoUrl" "microsoft-defender-workshop-400"
 
 # Template deployment
 $rg = Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*-security" };
@@ -117,11 +134,11 @@ $content = $content | ForEach-Object {$_ -Replace "GET-AZUSER-UPN", "$AzureUsern
 $content = $content | ForEach-Object {$_ -Replace "GET-ODL-ID", "$deploymentId"};
 $content = $content | ForEach-Object {$_ -Replace "GET-DEPLOYMENT-ID", "$deploymentId"};
 $content = $content | ForEach-Object {$_ -Replace "GET-REGION", "$($rg.location)"};
-$content = $content | ForEach-Object {$_ -Replace "ARTIFACTS-LOCATION", "https://raw.githubusercontent.com/solliancenet/microsoft-defender-workshop-400"};
+$content = $content | ForEach-Object {$_ -Replace "ARTIFACTS-LOCATION", $repoUrl};
 $content | Set-Content -Path "$($parametersFile).json";
 
 New-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName `
-  -TemplateUri "https://raw.githubusercontent.com/solliancenet/microsoft-defender-workshop-400/master/artifacts/environment-setup/automation/00-core.json" `
+  -TemplateUri "https://raw.githubusercontent.com/$repoUrl/main/artifacts/environment-setup/automation/00-core.json" `
   -TemplateParameterFile "$($parametersFile).json"
  
 cd './microsoft-defender-workshop-400/artifacts/environment-setup/automation'
