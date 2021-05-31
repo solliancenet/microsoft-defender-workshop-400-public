@@ -349,7 +349,9 @@
                 ]
               },
               "dhcpOptions": {
-                "dnsServers": "[variables('adPDCNicIPAddress')]"
+                "dnsServers": [
+                    "[variables('adPDCNicIPAddress')]"
+                ]
               },
               "subnets": [
                 {
@@ -416,7 +418,9 @@
                     ]
                 },
                 "dhcpOptions": {
-                    "dnsServers": "[variables('adPDCNicIPAddress')]"
+                    "dnsServers": [
+                        "[variables('adPDCNicIPAddress')]"
+                    ]
                   },
                 "subnets": [
                     {
@@ -497,7 +501,9 @@
                     ]
                 },
                 "dhcpOptions": {
-                    "dnsServers": "[variables('adPDCNicIPAddress')]"
+                    "dnsServers": [
+                        "[variables('adPDCNicIPAddress')]"
+                    ]
                   },
                 "subnets": [
                   {
@@ -1049,7 +1055,9 @@
             "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', concat(variables('resourceName'), '-paw-1-nsg'))]"
           },
           "dnsSettings": {
-            "dnsServers": "[variables('adPDCNicIPAddress')]"
+            "dnsServers": [
+                "[variables('adPDCNicIPAddress')]"
+            ]
         }
         }
       },
@@ -1163,7 +1171,9 @@
               "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', concat(variables('resourceName'), '-paw-1-nsg'))]"
             },
             "dnsSettings": {
-                "dnsServers": "[variables('adPDCNicIPAddress')]"
+                "dnsServers": [
+                    "[variables('adPDCNicIPAddress')]"
+                ]
             }
           }
         },
@@ -1311,7 +1321,9 @@
                     }
                 ],
                 "dnsSettings": {
-                    "dnsServers": "[variables('adPDCNicIPAddress')]"
+                    "dnsServers": [
+                        "[variables('adPDCNicIPAddress')]"
+                    ]
                 }
             }
         },
@@ -1348,7 +1360,9 @@
                     }
                 ],
                 "dnsSettings": {
-                    "dnsServers": "[variables('adPDCNicIPAddress')]"
+                    "dnsServers": [
+                        "[variables('adPDCNicIPAddress')]"
+                    ]
                 }
             }
         },
