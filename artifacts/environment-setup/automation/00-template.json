@@ -138,7 +138,6 @@
         "adBEAddressPoolID": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('adLBName'), variables('adLBBE'))]",
         "adDataDiskSize": 1000,
         "nicTemplateUri": "[uri(parameters('_artifactsLocation'), concat('nestedtemplates/nic.json', parameters('_artifactsLocationSasToken')))]",
-        "vnetwithDNSTemplateUri": "[uri(parameters('_artifactsLocation'), concat('nestedtemplates/vnet-with-dns-server.json', parameters('_artifactsLocationSasToken')))]",
         "configureADBDCTemplateUri": "[uri(parameters('_artifactsLocation'), concat('nestedtemplates/configureADBDC.json', parameters('_artifactsLocationSasToken')))]",
         "adPDCModulesURL": "[uri(parameters('_artifactsLocation'), concat('DSC/CreateADPDC.zip', parameters('_artifactsLocationSasToken')))]",
         "adPDCConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
@@ -348,6 +347,9 @@
                   "[variables('virtualNetworkAddressRange')]"
                 ]
               },
+              "dhcpOptions": {
+                "dnsServers": "[variables('adPDCNicIPAddress')]"
+              },
               "subnets": [
                 {
                   "name": "[variables('adSubnetName')]",
@@ -390,6 +392,9 @@
                         "10.1.0.0/16"
                     ]
                 },
+                "dhcpOptions": {
+                    "dnsServers": "[variables('adPDCNicIPAddress')]"
+                  },
                 "subnets": [
                     {
                         "name": "default",
@@ -468,6 +473,9 @@
                         "10.3.0.0/16"
                     ]
                 },
+                "dhcpOptions": {
+                    "dnsServers": "[variables('adPDCNicIPAddress')]"
+                  },
                 "subnets": [
                   {
                       "name": "default",
@@ -1378,43 +1386,6 @@
                     }
                 }
             ]
-        },
-        {
-            "name": "UpdateVNetDNS1",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-09-01",
-            "dependsOn": [
-                "CreateADForest"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('vnetwithDNSTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "location": {
-                        "value": "[variables('location')]"
-                    },
-                    "virtualNetworkName": {
-                        "value": "[variables('virtualNetworkName')]"
-                    },
-                    "virtualNetworkAddressRange": {
-                        "value": "[variables('virtualNetworkAddressRange')]"
-                    },
-                    "subnetName": {
-                        "value": "[variables('adSubnetName')]"
-                    },
-                    "subnetRange": {
-                        "value": "[variables('adSubnet')]"
-                    },
-                    "DNSServerAddress": {
-                        "value": [
-                            "[variables('adPDCNicIPAddress')]"
-                        ]
-                    }
-                }
-            }
         },
         {
             "name": "UpdateBDCNIC",
