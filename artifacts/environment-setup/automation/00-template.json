@@ -1289,7 +1289,10 @@
                                 {
                                     "id": "[variables('adBDCRDPNATRuleID')]"
                                 }
-                            ]
+                            ],
+                            "dnsSettings": {
+                                "dnsServers": "[variables('adPDCNicIPAddress')]"
+                            }
                         }
                     }
                 ]
@@ -1386,59 +1389,6 @@
                     }
                 }
             ]
-        },
-        {
-            "name": "UpdateBDCNIC",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-09-01",
-            "dependsOn": [
-                "[variables('adBDCNicName')]",
-                "UpdateVNetDNS1"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('nicTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "location": {
-                        "value": "[variables('location')]"
-                    },
-                    "nicName": {
-                        "value": "[variables('adBDCNicName')]"
-                    },
-                    "ipConfigurations": {
-                        "value": [
-                            {
-                                "name": "ipconfig1",
-                                "properties": {
-                                    "privateIPAllocationMethod": "Static",
-                                    "privateIPAddress": "[variables('adBDCNicIPAddress')]",
-                                    "subnet": {
-                                        "id": "[variables('adSubnetRef')]"
-                                    },
-                                    "loadBalancerBackendAddressPools": [
-                                        {
-                                            "id": "[variables('adBEAddressPoolID')]"
-                                        }
-                                    ],
-                                    "loadBalancerInboundNatRules": [
-                                        {
-                                            "id": "[variables('adBDCRDPNATRuleID')]"
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
-                    },
-                    "dnsServers": {
-                        "value": [
-                            "[variables('adPDCNicIPAddress')]"
-                        ]
-                    }
-                }
-            }
         },
         {
             "name": "[variables('adBDCVMName')]",
