@@ -126,9 +126,9 @@
         "virtualNetworkAddressRange": "10.2.0.0/16",
         "adSubnetName": "adSubnet",
         "adSubnet": "10.2.0.0/24",
-        "adPDCNicName": "[concat(variables('resourceName'),'-pdc-nic')]",
+        "adPDCNicName": "[concat(variables('resourceName'),'-adpdc-nic')]",
         "adPDCNicIPAddress": "10.2.0.4",
-        "adBDCNicName": "[concat(variables('resourceName'),'-bdc-nic')]",
+        "adBDCNicName": "[concat(variables('resourceName'),'-adbdc-nic')]",
         "adBDCNicIPAddress": "10.2.0.5",
         "adSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('adSubnetName'))]",
         "adLBName": "[concat(variables('resourceName'),'-adlb')]",
@@ -137,7 +137,6 @@
         "adBDCRDPNATRuleID": "[resourceId('Microsoft.Network/loadBalancers/inboundNatRules', variables('adLBName'), variables('adBDCRDPNAT'))]",
         "adBEAddressPoolID": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('adLBName'), variables('adLBBE'))]",
         "adDataDiskSize": 1000,
-        "nicTemplateUri": "[uri(parameters('_artifactsLocation'), concat('nestedtemplates/nic.json', parameters('_artifactsLocationSasToken')))]",
         "configureADBDCTemplateUri": "[uri(parameters('_artifactsLocation'), concat('nestedtemplates/configureADBDC.json', parameters('_artifactsLocationSasToken')))]",
         "adPDCModulesURL": "[uri(parameters('_artifactsLocation'), concat('DSC/CreateADPDC.zip', parameters('_artifactsLocationSasToken')))]",
         "adPDCConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
@@ -378,7 +377,29 @@
                     }
                 }
             ]
-            }
+            },
+            "resources": [
+                {
+                    "apiVersion": "2020-05-01",
+                    "type": "virtualNetworkPeerings",
+                    "name": "ad-to-hub",
+                    "location": "[variables('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/virtualNetworks/', concat(variables('resourceName'),'-ad'))]",
+                        "[resourceId('Microsoft.Network/virtualNetworks/', concat(variables('resourceName'),'-hub'))]"
+                    ],
+                    "comments": "ad to hub",
+                    "properties": {
+                        "allowVirtualNetworkAccess": true,
+                        "allowForwardedTraffic": false,
+                        "allowGatewayTransit": false,
+                        "useRemoteGateways": false,
+                        "remoteVirtualNetwork": {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('resourceName'),'-hub'))]"
+                        }
+                    }
+                }
+            ]
           },
         {
             "type": "Microsoft.Network/virtualNetworks",
@@ -509,7 +530,29 @@
                 ],
                 "enableDdosProtection": false,
                 "enableVmProtection": false
-            }
+            },
+            "resources": [
+                {
+                    "apiVersion": "2020-05-01",
+                    "type": "virtualNetworkPeerings",
+                    "name": "web-to-hub",
+                    "location": "[variables('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Network/virtualNetworks/', concat(variables('resourceName'),'-web'))]",
+                        "[resourceId('Microsoft.Network/virtualNetworks/', concat(variables('resourceName'),'-hub'))]"
+                    ],
+                    "comments": "web to hub",
+                    "properties": {
+                        "allowVirtualNetworkAccess": true,
+                        "allowForwardedTraffic": false,
+                        "allowGatewayTransit": false,
+                        "useRemoteGateways": false,
+                        "remoteVirtualNetwork": {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('resourceName'),'-hub'))]"
+                        }
+                    }
+                }
+            ]
         },
         {
           "type": "Microsoft.OperationalInsights/workspaces/linkedServices",
@@ -1289,13 +1332,13 @@
                                 {
                                     "id": "[variables('adBDCRDPNATRuleID')]"
                                 }
-                            ],
-                            "dnsSettings": {
-                                "dnsServers": "[variables('adPDCNicIPAddress')]"
-                            }
+                            ]
                         }
                     }
-                ]
+                ],
+                "dnsSettings": {
+                    "dnsServers": "[variables('adPDCNicIPAddress')]"
+                }
             }
         },
         {
