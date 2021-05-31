@@ -117,7 +117,7 @@
         "imageOffer": "WindowsServer",
         "imageSKU": "2016-Datacenter",
         "adAvailabilitySetName": "[concat(variables('resourceName'),'-adset')]",
-        "publicIPAddressName": "[concat(variables('resourceName'),'-ap-pip')]",
+        "publicIPAddressName": "[concat(variables('resourceName'),'-ad-pip')]",
         "adLBFE": "LBFE",
         "adLBBE": "LBBE",
         "adPDCRDPNAT": "adPDCRDP",
@@ -1266,7 +1266,7 @@
                     "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('adAvailabilitySetName'))]"
                 },
                 "osProfile": {
-                    "computerName": "[variables('adPDCVMName')]",
+                    "computerName": "adpdc",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
@@ -1448,7 +1448,7 @@
                     "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('adAvailabilitySetName'))]"
                 },
                 "osProfile": {
-                    "computerName": "[variables('adBDCVMName')]",
+                    "computerName": "adbdc",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
