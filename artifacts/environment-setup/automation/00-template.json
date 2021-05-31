@@ -1476,8 +1476,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-09-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('adBDCVMName'),'PrepareBDC')]",
-                "[resourceId('Microsoft.Resources/deployments', 'UpdateBDCNIC')]"
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('adBDCVMName'),'PrepareBDC')]"
             ],
             "properties": {
                 "mode": "Incremental",
