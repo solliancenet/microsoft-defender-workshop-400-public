@@ -96,6 +96,8 @@
           }
     },
     "variables": {
+        "domainJoinOptions" : "",
+        "ouPath" : "",
       "postInstallParameters": "[concat(' -azureUsername ', parameters('azureUsername'), ' -azurePassword ', parameters('azurePassword'), ' -azureTenantID ', variables('azureTenantID'), ' -azureSubscriptionID ', variables('azureSubscriptionID'), ' -odlId ', parameters('odlId'), ' -deploymentId ', parameters('deploymentId'))]",
       "location": "[resourceGroup().location]",
       "azureSubscriptionID": "[subscription().subscriptionId]",
@@ -1598,6 +1600,32 @@
                     }
                 }
             }
-        }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('dnsLabelPrefix'),'/joindomain')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('adBDCVMName'),'PrepareBDC')]",
+                "[concat('Microsoft.Compute/virtualMachines/', concat(variables('resourceName'), '-paw-1'))]",
+            ],
+            "properties": {
+              "publisher": "Microsoft.Compute",
+              "type": "JsonADDomainExtension",
+              "typeHandlerVersion": "1.3",
+              "autoUpgradeMinorVersion": true,
+              "settings": {
+                "Name": "[domainName('domainToJoin')]",
+                "OUPath": "[variables('ouPath')]",
+                "User": "[concat(domainName('domainToJoin'), '\\', parameters('adminUsername'))]",
+                "Restart": "true",
+                "Options": "[variables('domainJoinOptions')]"
+              },
+              "protectedSettings": {
+                "Password": "[parameters('adminPassword')]"
+              }
+            }
+          }
     ]
   }
