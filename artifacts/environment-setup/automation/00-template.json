@@ -1045,7 +1045,10 @@
           ],
           "networkSecurityGroup": {
             "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', concat(variables('resourceName'), '-paw-1-nsg'))]"
-          }
+          },
+          "dnsSettings": {
+            "dnsServers": "[variables('adPDCNicIPAddress')]"
+        }
         }
       },
         {
@@ -1156,6 +1159,9 @@
             ],
             "networkSecurityGroup": {
               "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', concat(variables('resourceName'), '-paw-1-nsg'))]"
+            },
+            "dnsSettings": {
+                "dnsServers": "[variables('adPDCNicIPAddress')]"
             }
           }
         },
@@ -1301,7 +1307,10 @@
                             ]
                         }
                     }
-                ]
+                ],
+                "dnsSettings": {
+                    "dnsServers": "[variables('adPDCNicIPAddress')]"
+                }
             }
         },
         {
