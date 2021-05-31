@@ -355,7 +355,27 @@
                     "addressPrefix": "[variables('adSubnet')]"
                   }
                 }
-              ]
+              ],
+              "virtualNetworkPeerings": [
+                {
+                    "name": "ad-to-hub",
+                    "properties": {
+                        "peeringState": "Connected",
+                        "remoteVirtualNetwork": {
+                            "id" : "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('resourceName'),'-hub'))]"
+                        },
+                        "allowVirtualNetworkAccess": true,
+                        "allowForwardedTraffic": false,
+                        "allowGatewayTransit": false,
+                        "useRemoteGateways": false,
+                        "remoteAddressSpace": {
+                            "addressPrefixes": [
+                                "10.0.0.0/16"
+                            ]
+                        }
+                    }
+                }
+            ]
             }
           },
         {
@@ -459,7 +479,26 @@
                       }
                   }
                 ],
-                "virtualNetworkPeerings": [],
+                "virtualNetworkPeerings": [
+                    {
+                        "name": "web-to-hub",
+                        "properties": {
+                            "peeringState": "Connected",
+                            "remoteVirtualNetwork": {
+                                "id" : "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('resourceName'),'-hub'))]"
+                            },
+                            "allowVirtualNetworkAccess": true,
+                            "allowForwardedTraffic": false,
+                            "allowGatewayTransit": false,
+                            "useRemoteGateways": false,
+                            "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                    "10.0.0.0/16"
+                                ]
+                            }
+                        }
+                    }
+                ],
                 "enableDdosProtection": false,
                 "enableVmProtection": false
             }
