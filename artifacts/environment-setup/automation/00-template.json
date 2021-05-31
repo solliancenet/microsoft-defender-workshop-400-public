@@ -662,7 +662,7 @@
                 "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('resourceName'), '-web'))]"
             ],
             "properties": {
-                "addressPrefix": "10.5.0.0/24",
+                "addressPrefix": "10.3.0.0/24",
                 "delegations": [],
                 "privateEndpointNetworkPolicies": "Enabled",
                 "privateLinkServiceNetworkPolicies": "Enabled"
