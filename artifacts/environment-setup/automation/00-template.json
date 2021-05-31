@@ -96,7 +96,7 @@
           }
     },
     "variables": {
-        "domainJoinOptions" : "",
+        "domainJoinOptions" : 3,
         "ouPath" : "",
       "postInstallParameters": "[concat(' -azureUsername ', parameters('azureUsername'), ' -azurePassword ', parameters('azurePassword'), ' -azureTenantID ', variables('azureTenantID'), ' -azureSubscriptionID ', variables('azureSubscriptionID'), ' -odlId ', parameters('odlId'), ' -deploymentId ', parameters('deploymentId'))]",
       "location": "[resourceGroup().location]",
