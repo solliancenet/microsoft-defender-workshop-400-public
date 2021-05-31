@@ -70,14 +70,14 @@
             "metadata": {
                 "description": "The DNS prefix for the public IP address used by the Load Balancer"
             },
-            "defaultValue" : "[concat('lab', parameters('uniqueSuffix'))]"
+            "defaultValue" : "[concat('ad', parameters('uniqueSuffix'))]"
         },
         "domainName": {
             "type": "string",
             "metadata": {
                 "description": "The FQDN of the AD Domain created "
             },
-            "defaultValue" : "[concat(parameters('uniqueSuffix'), '.com')]"
+            "defaultValue" : "[concat('ad', parameters('uniqueSuffix'), '.com')]"
           },
           "_artifactsLocation" : 
           {
