@@ -1045,6 +1045,7 @@
     "dependsOn": [
       "[concat('Microsoft.Network/virtualNetworks/', concat(variables('resourceName'), '-hub'))]",
       "[concat('Microsoft.Network/networkSecurityGroups/', concat(variables('resourceName'), '-paw-1-nsg'))]"
+      "[concat('Microsoft.Network/publicIpAddresses/', concat(variables('resourceName'), '-win10-pip'))]",
     ],
     "properties": {
       "ipConfigurations": [
@@ -1054,7 +1055,10 @@
             "subnet": {
               "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(variables('resourceName'), '-hub'), 'default')]"
             },
-            "privateIPAllocationMethod": "Dynamic"
+            "privateIPAllocationMethod": "Dynamic",
+            "publicIpAddress": {
+              "id": "[resourceId(resourceGroup().name,'Microsoft.Network/publicIpAddresses', concat(variables('resourceName'), '-win10-pip'))]"
+            }
           }
         }
       ],
@@ -1267,6 +1271,16 @@
             //"[variables('adPDCNicIPAddress')]"
           ]
         }
+      }
+    },
+    {
+      "name": "[concat(variables('resourceName'),'-win10-pip')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2017-08-01",
+      "location": "[variables('location')]",
+      "properties": {
+        "publicIPAddressVersion": "IPv4",
+        "publicIPAllocationMethod": "Dynamic"
       }
     },
     {
