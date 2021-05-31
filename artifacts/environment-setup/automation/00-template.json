@@ -957,6 +957,117 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2018-10-01",
+      "name": "[concat(variables('resourceName'),'-win10')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+          "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('resourceName'),'-win10-nic'))]",
+          "[resourceId('Microsoft.Storage/StorageAccounts', variables('resourceName'))]"
+      ],
+      "resources": [
+          {
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "name": "[concat(variables('resourceName'),'-win10','/', 'winExtension')]",
+              "apiVersion": "2015-06-15",
+              "location": "[resourceGroup().location]",
+              "comments": "Script",
+              "tags": {
+              "displayName": "VM Extension"
+              },
+              "dependsOn": [
+              "[concat('Microsoft.Compute/virtualMachines/', variables('resourceName'),'-win10')]"
+              ],
+              "properties": {
+              "publisher": "Microsoft.Compute",
+              "type": "CustomScriptExtension",
+              "typeHandlerVersion": "1.8",
+              "autoUpgradeMinorVersion": true,
+              "settings": {
+                  "fileUris": [
+                  "https://raw.githubusercontent.com/Microsoft/microsoft-defender-workshop-400-public/main/environment-setup/spektra/post-install-script01.ps1"
+                  ]
+              },
+              "protectedSettings": {
+                  "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File post-install-script01.ps1', variables('postInstallParameters'))]"
+              }
+          }
+      }],
+      "properties": {
+          "hardwareProfile": {
+              "vmSize": "Standard_D2s_v3"
+          },
+          "storageProfile": {
+              "imageReference": {
+                  "publisher": "MicrosoftWindowsDesktop",
+                  "offer": "Windows-10",
+                  "sku": "20h1-pro-g2",
+                  "version": "latest"
+                },
+              "osDisk": {
+                  "osType": "Windows",
+                  "name": "[concat(variables('resourceName'),'-win10', '_OsDisk')]",
+                  "createOption": "FromImage",
+                  "caching": "ReadWrite",
+                  "managedDisk": {
+                      "storageAccountType": "Premium_LRS"                            
+                  },
+                  "diskSizeGB": 127
+              },
+              "dataDisks": []
+          },
+          "osProfile": {
+              "computerName": "win10",
+              "adminUsername": "[parameters('adminUsername')]",
+              "adminPassword": "[parameters('adminPassword')]",
+              "secrets": [],
+              "allowExtensionOperations": true
+          },
+          "networkProfile": {
+              "networkInterfaces": [
+                  {
+                      "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('resourceName'),'-win10','-nic'))]"
+                  }
+              ]
+          },
+          "diagnosticsProfile": {
+              "bootDiagnostics": {
+                  "enabled": true,
+                  "storageUri": "[reference(resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts', variables('resourceName')), '2015-06-15').primaryEndpoints['blob']]"
+              }
+          }
+      }
+  },
+  {
+    "name": "[concat(variables('resourceName'),'-win10-nic')]",
+    "type": "Microsoft.Network/networkInterfaces",
+    "apiVersion": "2016-09-01",
+    "location": "[variables('location')]",
+    "dependsOn": [
+      "[concat('Microsoft.Network/virtualNetworks/', concat(variables('resourceName'), '-hub'))]",
+      "[concat('Microsoft.Network/networkSecurityGroups/', concat(variables('resourceName'), '-paw-1-nsg'))]"
+    ],
+    "properties": {
+      "ipConfigurations": [
+        {
+          "name": "ipconfig1",
+          "properties": {
+            "subnet": {
+              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(variables('resourceName'), '-hub'), 'default')]"
+            },
+            "privateIPAllocationMethod": "Dynamic"
+          }
+        }
+      ],
+      "networkSecurityGroup": {
+        "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', concat(variables('resourceName'), '-paw-1-nsg'))]"
+      },
+      "dnsSettings": {
+        //"dnsServers": ["[variables('adPDCNicIPAddress')]"]
+      }
+    }
+  },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2019-07-01",
       "name": "[concat(variables('resourceName'),'-linux-1')]",
       "location": "[variables('location')]",
@@ -1038,7 +1149,7 @@
           "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', concat(variables('resourceName'), '-paw-1-nsg'))]"
         },
         "dnsSettings": {
-          "dnsServers": ["[variables('adPDCNicIPAddress')]"]
+          //"dnsServers": ["[variables('adPDCNicIPAddress')]"]
         }
       }
     },
@@ -1603,7 +1714,8 @@
       "location": "[variables('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('adBDCVMName'),'PrepareBDC')]",
-        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('resourceName'), '-paw-1'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', concat(variables('resourceName'), '-paw-1'))]",
+        "UpdateVNetDNS2"
       ],
       "properties": {
         "publisher": "Microsoft.Compute",

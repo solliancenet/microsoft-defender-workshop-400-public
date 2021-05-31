@@ -19,83 +19,13 @@ Param (
   $deploymentId
 )
 
-function InstallGit()
-{
-  Write-Host "Installing Git." -ForegroundColor Green -Verbose
-
-  #download and install git...		
-  $output = "$env:TEMP\git.exe";
-  Invoke-WebRequest -Uri https://github.com/git-for-windows/git/releases/download/v2.27.0.windows.1/Git-2.27.0-64-bit.exe -OutFile $output; 
-
-  $productPath = "$env:TEMP";
-  $productExec = "git.exe"	
-  $argList = "/SILENT"
-  start-process "$productPath\$productExec" -ArgumentList $argList -wait
-
-}
-
-function InstallAzureCli()
-{
-  Write-Host "Installing Azure CLI." -ForegroundColor Green -Verbose
-
-  #install azure cli
-  Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi -usebasicparsing; 
-  Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; 
-  rm .\AzureCLI.msi
-}
-
-#Disable-InternetExplorerESC
-function DisableInternetExplorerESC
-{
-  $AdminKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}"
-  $UserKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}"
-  Set-ItemProperty -Path $AdminKey -Name "IsInstalled" -Value 0 -Force -ErrorAction SilentlyContinue -Verbose
-  Set-ItemProperty -Path $UserKey -Name "IsInstalled" -Value 0 -Force -ErrorAction SilentlyContinue -Verbose
-  Write-Host "IE Enhanced Security Configuration (ESC) has been disabled." -ForegroundColor Green -Verbose
-}
-
-#Enable-InternetExplorer File Download
-function EnableIEFileDownload
-{
-  $HKLM = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3"
-  $HKCU = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3"
-  Set-ItemProperty -Path $HKLM -Name "1803" -Value 0 -ErrorAction SilentlyContinue -Verbose
-  Set-ItemProperty -Path $HKCU -Name "1803" -Value 0 -ErrorAction SilentlyContinue -Verbose
-  Set-ItemProperty -Path $HKLM -Name "1604" -Value 0 -ErrorAction SilentlyContinue -Verbose
-  Set-ItemProperty -Path $HKCU -Name "1604" -Value 0 -ErrorAction SilentlyContinue -Verbose
-}
-
-#Create InstallAzPowerShellModule
-function InstallAzPowerShellModule
-{
-  Write-Host "Installing Azure PowerShell (NuGet)." -ForegroundColor Green -Verbose
-
-  Install-PackageProvider NuGet -Force
-  Set-PSRepository PSGallery -InstallationPolicy Trusted
-  Install-Module Az -Repository PSGallery -Force -AllowClobber
-}
-
-function InstallAzPowerShellModuleMSI
-{
-  Write-Host "Installing Azure PowerShell (MSI)." -ForegroundColor Green -Verbose
-  #download and install git...		
-  Invoke-WebRequest -Uri https://github.com/Azure/azure-powershell/releases/download/v4.5.0-August2020/Az-Cmdlets-4.5.0.33237-x64.msi -usebasicparsing -OutFile .\AzurePS.msi;
-  Start-Process msiexec.exe -Wait -ArgumentList '/I AzurePS.msi /quiet'; 
-  rm .\AzurePS.msi
-}
-
-#Create-LabFilesDirectory
-function CreateLabFilesDirectory
-{
-  New-Item -ItemType directory -Path C:\LabFiles -force
-}
 
 #Create Azure Credential File on Desktop
 function CreateCredFile($azureUsername, $azurePassword, $azureTenantID, $azureSubscriptionID, $deploymentId)
 {
   $WebClient = New-Object System.Net.WebClient
-  $WebClient.DownloadFile("https://raw.githubusercontent.com/solliancenet/azure-synapse-analytics-workshop-400/master/artifacts/environment-setup/spektra/AzureCreds.txt","C:\LabFiles\AzureCreds.txt")
-  $WebClient.DownloadFile("https://raw.githubusercontent.com/solliancenet/azure-synapse-analytics-workshop-400/master/artifacts/environment-setup/spektra/AzureCreds.ps1","C:\LabFiles\AzureCreds.ps1")
+  $WebClient.DownloadFile("https://raw.githubusercontent.com/$repoUrl/main/artifacts/environment-setup/spektra/AzureCreds.txt","C:\LabFiles\AzureCreds.txt")
+  $WebClient.DownloadFile("https://raw.githubusercontent.com/$repoUrl/main/artifacts/environment-setup/spektra/AzureCreds.ps1","C:\LabFiles\AzureCreds.ps1")
 
   (Get-Content -Path "C:\LabFiles\AzureCreds.txt") | ForEach-Object {$_ -Replace "ClientIdValue", ""} | Set-Content -Path "C:\LabFiles\AzureCreds.ps1"
   (Get-Content -Path "C:\LabFiles\AzureCreds.txt") | ForEach-Object {$_ -Replace "AzureUserNameValue", "$azureUsername"} | Set-Content -Path "C:\LabFiles\AzureCreds.txt"
@@ -116,14 +46,28 @@ function CreateCredFile($azureUsername, $azurePassword, $azureTenantID, $azureSu
   Copy-Item "C:\LabFiles\AzureCreds.txt" -Destination "C:\Users\Public\Desktop"
 }
 
+function CreateTestScript($azureUsername, $azurePassword, $azureTenantID, $azureSubscriptionID, $deploymentId)
+{
+  cd c:\labfiles;
+
+  #copy the script to lab files
+  $WebClient = New-Object System.Net.WebClient;
+  $WebClient.DownloadFile("https://raw.githubusercontent.com/$repoUrl/main/artifacts/environment-setup\spektra\post-install-script01.ps1","C:\LabFiles\post-install-script01.ps1")
+  
+  remove-item "RunInstall.ps1" -ea silentlycontinue;
+  
+  #create the test script
+  add-content "RunInstall.ps1" "cd c:\labfiles";
+  
+  $line = "powershell.exe -ExecutionPolicy Unrestricted -File post-install-script01.ps1 -azureUsername $azureUsername -azurePassword $azurePassword -azureTenantID $azureTenantID -azureSubscriptionID $azureSubscriptionID -odlId $deploymentId -deploymentId $deploymentId";
+  
+  add-content "RunInstall.ps1" $line;
+}
+
 Start-Transcript -Path C:\WindowsAzure\Logs\CloudLabsCustomScriptExtension.txt -Append
 
 [Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls
 [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls" 
-
-DisableInternetExplorerESC
-
-EnableIEFileDownload
 
 #download the solliance pacakage
 $WebClient = New-Object System.Net.WebClient;
@@ -134,6 +78,24 @@ $WebClient.DownloadFile("https://raw.githubusercontent.com/solliancenet/common-w
 . C:\LabFiles\Common.ps1
 . C:\LabFiles\HttpHelper.ps1
 
+Set-Executionpolicy unrestricted -force
+
+DisableInternetExplorerESC
+
+EnableIEFileDownload
+
+InstallChocolaty
+
+InstallNotepadPP
+
+InstallAzPowerShellModule
+
+InstallGit
+        
+InstallAzureCli
+
+InstallChrome
+
 Uninstall-AzureRm -ea SilentlyContinue
 
 CreateLabFilesDirectory
@@ -142,7 +104,12 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
 
 cd "c:\labfiles";
 
+$branch = "main";
+$repoUrl = "solliancenet/microsoft-defender-workshop-400-public";
+
 CreateCredFile $azureUsername $azurePassword $azureTenantID $azureSubscriptionID $deploymentId $odlId
+
+CreateTestScript $azureUsername $azurePassword $azureTenantID $azureSubscriptionID $deploymentId $odlId
 
 . C:\LabFiles\AzureCreds.ps1
 
@@ -155,11 +122,20 @@ $securePassword = $password | ConvertTo-SecureString -AsPlainText -Force
 $cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $userName, $SecurePassword
 
 Connect-AzAccount -Credential $cred | Out-Null
- 
-# Template deployment
-$resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*-security*" }).ResourceGroupName
-$deploymentId =  (Get-AzResourceGroup -Name $resourceGroupName).Tags["DeploymentId"]
 
+#download the git repo...
+Write-Host "Download Git repo." -ForegroundColor Green -Verbose
+
+remove-item "microsoft-defender-workshop-400" -force -recurse -ea silentlycontinue;
+
+git clone "https://github.com/$repoUrl" "microsoft-defender-workshop-400"
+
+cd './microsoft-defender-workshop-400/artifacts/environment-setup/automation'
+
+#execute setup scripts
+Write-Host "Executing post scripts." -ForegroundColor Green -Verbose
+#./01-environment-setup.ps1
+#./03-environment-validate.ps1
 
 sleep 20
 
