@@ -289,9 +289,9 @@
                 "accessPolicies": [
                     
                 ],
-                "enabledForDeployment": false,
-                "enabledForDiskEncryption": false,
-                "enabledForTemplateDeployment": false,
+                "enabledForDeployment": true,
+                "enabledForDiskEncryption": true,
+                "enabledForTemplateDeployment": true,
                 "enableSoftDelete": true
             }
         },
@@ -370,8 +370,8 @@
                             "id" : "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('resourceName'),'-hub'))]"
                         },
                         "allowVirtualNetworkAccess": true,
-                        "allowForwardedTraffic": false,
-                        "allowGatewayTransit": false,
+                        "allowForwardedTraffic": true,
+                        "allowGatewayTransit": true,
                         "useRemoteGateways": false,
                         "remoteAddressSpace": {
                             "addressPrefixes": [
@@ -395,8 +395,8 @@
                     "comments": "ad to hub",
                     "properties": {
                         "allowVirtualNetworkAccess": true,
-                        "allowForwardedTraffic": false,
-                        "allowGatewayTransit": false,
+                        "allowForwardedTraffic": true,
+                        "allowGatewayTransit": true,
                         "useRemoteGateways": false,
                         "remoteVirtualNetwork": {
                             "id": "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('resourceName'),'-hub'))]"
@@ -459,8 +459,8 @@
                     "comments": "hub to ad",
                     "properties": {
                         "allowVirtualNetworkAccess": true,
-                        "allowForwardedTraffic": false,
-                        "allowGatewayTransit": false,
+                        "allowForwardedTraffic": true,
+                        "allowGatewayTransit": true,
                         "useRemoteGateways": false,
                         "remoteVirtualNetwork": {
                             "id": "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('resourceName'),'-ad'))]"
@@ -479,8 +479,8 @@
                     "comments": "hub to web",
                     "properties": {
                         "allowVirtualNetworkAccess": true,
-                        "allowForwardedTraffic": false,
-                        "allowGatewayTransit": false,
+                        "allowForwardedTraffic": true,
+                        "allowGatewayTransit": true,
                         "useRemoteGateways": false,
                         "remoteVirtualNetwork": {
                             "id": "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('resourceName'),'-web'))]"
@@ -525,8 +525,8 @@
                                 "id" : "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('resourceName'),'-hub'))]"
                             },
                             "allowVirtualNetworkAccess": true,
-                            "allowForwardedTraffic": false,
-                            "allowGatewayTransit": false,
+                            "allowForwardedTraffic": true,
+                            "allowGatewayTransit": true,
                             "useRemoteGateways": false,
                             "remoteAddressSpace": {
                                 "addressPrefixes": [
@@ -552,8 +552,8 @@
                     "comments": "web to hub",
                     "properties": {
                         "allowVirtualNetworkAccess": true,
-                        "allowForwardedTraffic": false,
-                        "allowGatewayTransit": false,
+                        "allowForwardedTraffic": true,
+                        "allowGatewayTransit": true,
                         "useRemoteGateways": false,
                         "remoteVirtualNetwork": {
                             "id": "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('resourceName'),'-hub'))]"
