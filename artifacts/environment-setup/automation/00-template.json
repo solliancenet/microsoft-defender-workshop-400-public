@@ -1044,8 +1044,8 @@
     "location": "[variables('location')]",
     "dependsOn": [
       "[concat('Microsoft.Network/virtualNetworks/', concat(variables('resourceName'), '-hub'))]",
-      "[concat('Microsoft.Network/networkSecurityGroups/', concat(variables('resourceName'), '-paw-1-nsg'))]"
-      "[concat('Microsoft.Network/publicIpAddresses/', concat(variables('resourceName'), '-win10-pip'))]",
+      "[concat('Microsoft.Network/networkSecurityGroups/', concat(variables('resourceName'), '-paw-1-nsg'))]",
+      "[concat('Microsoft.Network/publicIpAddresses/', concat(variables('resourceName'), '-win10-pip'))]"
     ],
     "properties": {
       "ipConfigurations": [
