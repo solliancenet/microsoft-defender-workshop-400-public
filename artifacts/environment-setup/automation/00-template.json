@@ -1605,7 +1605,7 @@
             "apiVersion": "2015-06-15",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(parameters('dnsPrefix'),'/joindomain')]",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('adBDCVMName'),'PrepareBDC')]",
                 "[concat('Microsoft.Compute/virtualMachines/', concat(variables('resourceName'), '-paw-1'))]",
