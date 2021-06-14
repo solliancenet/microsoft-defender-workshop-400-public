@@ -220,7 +220,7 @@
       "kind": "v12.0",
       "properties": {
           "administratorLogin": "[parameters('adminUsername')]",
-          "administratorPassword": "[parameters('adminPassword')]",
+          "administratorLoginPassword": "[parameters('adminPassword')]",
           "version": "12.0",
           "publicNetworkAccess": "Enabled",
           "restrictOutboundNetworkAccess": "Disabled"

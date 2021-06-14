@@ -161,6 +161,39 @@ New-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName `
  
 cd './microsoft-defender-workshop-400/artifacts/environment-setup/automation'
 
+#upload the bacpac file...
+$bacpacFilename = "Insurance.bacpac"
+
+# The ip address range that you want to allow to access your server
+$startip = "0.0.0.0"
+$endip = "0.0.0.0"
+
+$resourceName = "wssecurity" + $deploymentId;
+$storageAccountName = $resourceName;
+$serverName = $resourceName;
+$storageContainerName = "sqlimport";
+$databaseName = "Insurance";
+
+$storageContainer = New-AzStorageContainer -Name $storageContainerName -Context $(New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $(Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -Name $storageAccountName).Value[0])
+
+Set-AzStorageBlobContent -Container $storagecontainername -File $bacpacFilename -Context $(New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $(Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -Name $storageAccountName).Value[0])
+
+#deploy the bacpac file...
+$serverFirewallRule = New-AzSqlServerFirewallRule -ResourceGroupName $resourceGroupName -ServerName $serverName -FirewallRuleName "AllowedIPs" -StartIpAddress $startIp -EndIpAddress $endIp
+
+$importRequest = New-AzSqlDatabaseImport -ResourceGroupName $resourceGroupName `
+    -ServerName $serverName `
+    -DatabaseName $databaseName `
+    -DatabaseMaxSizeBytes 100GB `
+    -StorageKeyType "StorageAccessKey" `
+    -StorageKey $(Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName).Value[0] `
+    -StorageUri "https://$storageaccountname.blob.core.windows.net/$storageContainerName/$bacpacFilename" `
+    -Edition "Standard" `
+    -ServiceObjectiveName "S3" `
+    -AdministratorLogin "$userName" `
+    -AdministratorLoginPassword $(ConvertTo-SecureString -String $password -AsPlainText -Force)
+
+
 #execute setup scripts
 Write-Host "Executing post scripts." -ForegroundColor Green -Verbose
 #./01-environment-setup.ps1
