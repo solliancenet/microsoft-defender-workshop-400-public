@@ -69,6 +69,9 @@ Start-Transcript -Path C:\WindowsAzure\Logs\CloudLabsCustomScriptExtension.txt -
 [Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls
 [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls" 
 
+mkdir "c:\temp" -ea SilentlyContinue;
+mkdir "c:\labfiles" -ea SilentlyContinue;
+
 #download the solliance pacakage
 $WebClient = New-Object System.Net.WebClient;
 $WebClient.DownloadFile("https://raw.githubusercontent.com/solliancenet/common-workshop/main/scripts/common.ps1","C:\LabFiles\common.ps1")
@@ -84,17 +87,23 @@ DisableInternetExplorerESC
 
 EnableIEFileDownload
 
-#InstallChocolaty
+InstallChocolaty
 
-#InstallNotepadPP
+InstallNotepadPP
 
-#InstallAzPowerShellModule
+InstallAzPowerShellModule
 
-#InstallGit
+InstallGit
         
-#InstallAzureCli
+InstallAzureCli
 
 InstallChrome
+
+InstallDocker
+
+InstallDockerWin10
+
+InstallDockerCompose
 
 Uninstall-AzureRm -ea SilentlyContinue
 

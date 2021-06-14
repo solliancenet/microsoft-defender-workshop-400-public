@@ -144,7 +144,18 @@
     "adBDCPreparationModulesURL": "[uri(parameters('_artifactsLocation'), concat('DSC/PrepareADBDC.zip', parameters('_artifactsLocationSasToken')))]",
     "adBDCPreparationFunction": "PrepareADBDC.ps1\\PrepareADBDC",
     "adBDCConfigurationModulesURL": "[uri(parameters('_artifactsLocation'), concat('DSC/ConfigureADBDC.zip', parameters('_artifactsLocationSasToken')))]",
-    "adBDCConfigurationFunction": "ConfigureADBDC.ps1\\ConfigureADBDC"
+    "adBDCConfigurationFunction": "ConfigureADBDC.ps1\\ConfigureADBDC",
+    "kubernetesClusterName": "[concat('wssecurity',parameters('uniqueSuffix'))]",
+    "kubernetesVersion": "1.19.9",
+      "kubernetesDnsPrefix": "[concat('wssecurity',parameters('uniqueSuffix'), '-dns')]",
+      "kubernetesAgentOsType": "Linux",
+      "kubernetesAgentOsDiskSizeGB": 0,
+      "kubernetesAgentCount": 2,
+      "kubernetesAgentVmSize": "Standard_D2_v2",
+      "kubernetesNetworkProfilePlugin": "kubenet",
+      "kubernetesRBACEnabled": true,
+      "logAnalyticsName": "[concat('wssecurity',parameters('uniqueSuffix'))]",
+      "logAnalyticsId": "[resourceId(resourceGroup().name, 'Microsoft.OperationalInsights/workspaces', variables('logAnalyticsName'))]"
   },
   "resources": [
     {
@@ -158,6 +169,63 @@
         }
       }
     },
+    {
+      "type": "Microsoft.ContainerService/managedClusters",
+      "apiVersion": "2020-03-01",
+      "name": "[variables('resourceName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsName'))]"
+      ],
+      "properties": {
+          "kubernetesVersion": "[variables('kubernetesVersion')]",
+          "enableRBAC": "[variables('kubernetesRBACEnabled')]",
+          "dnsPrefix": "[variables('kubernetesDnsPrefix')]",
+          "agentPoolProfiles": [
+              {
+                  "name": "agentpool",
+                  "count": "[variables('kubernetesAgentCount')]",
+                  "osDiskSizeGB": "[variables('kubernetesAgentOsDiskSizeGB')]",
+                  "osType": "[variables('kubernetesAgentOsType')]",
+                  "vmSize": "[variables('kubernetesAgentVmSize')]",
+                  "storageProfile": "ManagedDisks",
+                  "type": "VirtualMachineScaleSets",
+                  "mode": "System"
+              }
+          ],
+          "networkProfile": {
+              "networkPlugin": "[variables('kubernetesNetworkProfilePlugin')]"
+          },
+          "addonProfiles": {
+              "httpApplicationRouting": {
+                  "enabled": false
+              },
+              "omsagent": {
+                  "enabled": true,
+                  "config": {
+                      "logAnalyticsWorkspaceResourceID": "[variables('logAnalyticsId')]"
+                  }
+              }
+          }
+      },
+      "identity": {
+          "type": "SystemAssigned"
+      }            
+  },
+    {
+      "type": "Microsoft.Sql/servers",
+      "apiVersion": "2021-02-01-preview",
+      "name": "[variables('resourceName')]",
+      "location": "[resourceGroup().location]",
+      "kind": "v12.0",
+      "properties": {
+          "administratorLogin": "[parameters('adminUsername')]",
+          "administratorPassword": "[parameters('adminPassword')]",
+          "version": "12.0",
+          "publicNetworkAccess": "Enabled",
+          "restrictOutboundNetworkAccess": "Disabled"
+      }
+  }
     {
       "type": "Microsoft.Storage/storageAccounts",
       "sku": {
