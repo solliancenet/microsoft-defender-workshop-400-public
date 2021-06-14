@@ -225,7 +225,7 @@
           "publicNetworkAccess": "Enabled",
           "restrictOutboundNetworkAccess": "Disabled"
       }
-  }
+  },
     {
       "type": "Microsoft.Storage/storageAccounts",
       "sku": {
