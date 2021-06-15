@@ -178,9 +178,10 @@ $storageContainer = New-AzStorageContainer -Name $storageContainerName -Context 
 
 Set-AzStorageBlobContent -Container $storagecontainername -File $bacpacFilename -Context $(New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $(Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -Name $storageAccountName).Value[0])
 
-#deploy the bacpac file...
-$serverFirewallRule = New-AzSqlServerFirewallRule -ResourceGroupName $resourceGroupName -ServerName $serverName -FirewallRuleName "AllowedIPs" -StartIpAddress $startIp -EndIpAddress $endIp
+#allow azure
+$serverFirewallRule = New-AzSqlServerFirewallRule -ResourceGroupName $resourceGroupName -ServerName $serverName -AllowAllAzureIPs
 
+#deploy the bacpac file...
 $importRequest = New-AzSqlDatabaseImport -ResourceGroupName $resourceGroupName `
     -ServerName $serverName `
     -DatabaseName $databaseName `
@@ -196,6 +197,8 @@ $importRequest = New-AzSqlDatabaseImport -ResourceGroupName $resourceGroupName `
 
 #execute setup scripts
 Write-Host "Executing post scripts." -ForegroundColor Green -Verbose
+
+
 #./01-environment-setup.ps1
 #./03-environment-validate.ps1
 
