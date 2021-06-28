@@ -134,6 +134,28 @@ $WebClient.DownloadFile("https://raw.githubusercontent.com/solliancenet/common-w
 . C:\LabFiles\Common.ps1
 . C:\LabFiles\HttpHelper.ps1
 
+InstallChocolaty
+
+InstallNotepadPP
+
+InstallAzPowerShellModule
+
+InstallGit
+        
+InstallAzureCli
+
+InstallChrome
+
+InstallFiddler
+
+InstallDocker
+
+InstallOffice
+
+InstallDockerWin10
+
+InstallDockerCompose
+
 Uninstall-AzureRm -ea SilentlyContinue
 
 CreateLabFilesDirectory
@@ -160,6 +182,34 @@ Connect-AzAccount -Credential $cred | Out-Null
 $resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*-security*" }).ResourceGroupName
 $deploymentId =  (Get-AzResourceGroup -Name $resourceGroupName).Tags["DeploymentId"]
 
+$resourceName = "wssecurity" + $deploymentId;
+
+$storageAccountName = $resourceName;
+
+#create the local drive
+$shareName = "users";
+
+$storageKey = $(Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -Name $storageAccountName).Value[0];
+
+$context = $(New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageKey);
+
+$secKey = ConvertTo-SecureString -String $storageKey -AsPlainText -Force
+
+$credential = New-Object System.Management.Automation.PSCredential -ArgumentList "Azure\$($storageAccountName)", $secKey
+
+#create a file share...
+New-PSDrive -Name X -PSProvider FileSystem -Root "\\$($storageAccountName).file.core.windows.net\$shareName" -Credential $credential
+
+#create some files...
+. "c:\labfiles\$workshopName\artifacts\environment-setup\automation\EncryptHelper.ps1"
+
+CreateFiles 100;
+
+#upload the files to azure share...
+$userPath = $env:USERPROFILE;
+$oneDrivePath = "$userPath\OneDrive";
+
+copy "$oneDrivePath\*.*" "x:\"
 
 sleep 20
 
