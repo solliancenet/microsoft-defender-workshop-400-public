@@ -177,14 +177,14 @@ $databaseName = "Insurance";
 $storageKey = $(Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -Name $storageAccountName).Value[0];
 $context = $(New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageKey);
 
-$storageContainer = New-AzStorageContainer -Name $storageContainerName -Context $(New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $(Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -Name $storageAccountName).Value[0])
+$storageContainer = New-AzStorageContainer -Name $storageContainerName -Context $context;
 
 Set-AzStorageBlobContent -Container $storagecontainername -File $bacpacFilename -Context $context
 
 #create a share
 $shareName = "users";
 
-New-AzureStorageShare -Name $shareName -Context $storageContext;
+New-AzRmStorageShare -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -Name $shareName -EnabledProtocol SMB -QuotaGiB 1024;
 
 #allow azure
 $serverFirewallRule = New-AzSqlServerFirewallRule -ResourceGroupName $resourceGroupName -ServerName $serverName -AllowAllAzureIPs
