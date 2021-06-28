@@ -52,7 +52,7 @@ function CreateTestScript($azureUsername, $azurePassword, $azureTenantID, $azure
 
   #copy the script to lab files
   $WebClient = New-Object System.Net.WebClient;
-  $WebClient.DownloadFile("https://raw.githubusercontent.com/$repoUrl/main/artifacts/environment-setup\spektra\post-install-script01.ps1","C:\LabFiles\post-install-script01.ps1")
+  $WebClient.DownloadFile("https://raw.githubusercontent.com/$repoUrl/$branch/artifacts/environment-setup\spektra\post-install-script01.ps1","C:\LabFiles\post-install-script01.ps1")
   
   remove-item "RunInstall.ps1" -ea silentlycontinue;
   
@@ -177,7 +177,7 @@ $databaseName = "Insurance";
 $storageKey = $(Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -Name $storageAccountName).Value[0];
 $context = $(New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageKey);
 
-$storageContainer = New-AzStorageContainer -Name $storageContainerName -Context $context;
+$storageContainer = New-AzStorageContainer -Name $storageContainerName -Permission Container -Context $context;
 
 Set-AzStorageBlobContent -Container $storagecontainername -File $bacpacFilename -Context $context
 
@@ -185,6 +185,10 @@ Set-AzStorageBlobContent -Container $storagecontainername -File $bacpacFilename 
 $shareName = "users";
 
 New-AzRmStorageShare -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -Name $shareName -EnabledProtocol SMB -QuotaGiB 1024;
+
+$user = Get-AzADUser -UserPrincipalName $userName;
+
+Set-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName $resourceGroupName -ServerName $serverName -DisplayName $user.DisplayName -ObjectId $user.Id;
 
 #allow azure
 $serverFirewallRule = New-AzSqlServerFirewallRule -ResourceGroupName $resourceGroupName -ServerName $serverName -AllowAllAzureIPs
@@ -199,7 +203,7 @@ $importRequest = New-AzSqlDatabaseImport -ResourceGroupName $resourceGroupName `
     -StorageUri "https://$storageaccountname.blob.core.windows.net/$storageContainerName/$bacpacFilename" `
     -Edition "Standard" `
     -ServiceObjectiveName "S3" `
-    -AdministratorLogin "$userName" `
+    -AdministratorLogin "wsuser" `
     -AdministratorLoginPassword $(ConvertTo-SecureString -String $password -AsPlainText -Force)
 
 

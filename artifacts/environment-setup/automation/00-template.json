@@ -1056,7 +1056,7 @@
                   ]
               },
               "protectedSettings": {
-                  "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File post-install-script01.ps1', variables('postInstallParameters'))]"
+                  "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File post-install-script02.ps1', variables('postInstallParameters'))]"
               }
           }
       }],
