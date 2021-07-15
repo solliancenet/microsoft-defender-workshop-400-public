@@ -1600,6 +1600,33 @@
       },
       "resources": [
         {
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(variables('adPDCVMName'),'/', 'winExtension')]",
+          "apiVersion": "2015-06-15",
+          "location": "[resourceGroup().location]",
+          "comments": "Script",
+          "tags": {
+          "displayName": "VM Extension"
+          },
+          "dependsOn": [
+          "[concat('Microsoft.Compute/virtualMachines/', concat(variables('resourceName'),'-paw-1'))]"
+          ],
+          "properties": {
+          "publisher": "Microsoft.Compute",
+          "type": "CustomScriptExtension",
+          "typeHandlerVersion": "1.8",
+          "autoUpgradeMinorVersion": true,
+          "settings": {
+              "fileUris": [
+              "https://raw.githubusercontent.com/solliancenet/microsoft-defender-workshop-400-public/master/artifacts/environment-setup/automation/spektra/post-install-script02.ps1"
+              ]
+          },
+          "protectedSettings": {
+              "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File post-install-script02.ps1', variables('postInstallParameters'))]"
+          }
+          }
+      }, 
+        {
           "name": "CreateADForest",
           "type": "extensions",
           "apiVersion": "2019-12-01",
@@ -1689,7 +1716,36 @@
             }
           ]
         }
+      },
+      "resources": [
+        {
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(variables('adBDCVMName'),'/', 'winExtension')]",
+          "apiVersion": "2015-06-15",
+          "location": "[resourceGroup().location]",
+          "comments": "Script",
+          "tags": {
+          "displayName": "VM Extension"
+          },
+          "dependsOn": [
+          "[concat('Microsoft.Compute/virtualMachines/', concat(variables('resourceName'),'-paw-1'))]"
+          ],
+          "properties": {
+          "publisher": "Microsoft.Compute",
+          "type": "CustomScriptExtension",
+          "typeHandlerVersion": "1.8",
+          "autoUpgradeMinorVersion": true,
+          "settings": {
+              "fileUris": [
+              "https://raw.githubusercontent.com/solliancenet/microsoft-defender-workshop-400-public/master/artifacts/environment-setup/automation/spektra/post-install-script02.ps1"
+              ]
+          },
+          "protectedSettings": {
+              "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File post-install-script02.ps1', variables('postInstallParameters'))]"
+          }
+          }
       }
+    ]
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
